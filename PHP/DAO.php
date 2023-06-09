@@ -4,18 +4,20 @@ require_once 'db.php';
 class DAO {
 	private $db;
 
-	// za 2. nacin resenja
-	private $STUDENTEXIST = "SELECT * FROM student where id=?";
-	private $UPDATESTUDENT = "UPDATE student SET= ime=>?, prezime=>?, indeks=>? WHERE id=?";
+	private $AVERAGEGOALS = "SELECT AVG(brgolova) FROM fudbaleri";
+
+	private $GETFUDBALER = "SELECT * FROM fudbaleri WHERE brojgolova>n";
+
+	private $FUDBALER = "SELECT * FROM fudbaleri where id=?";
 	
 	public function __construct()
 	{
 		$this->db = DB::createInstance();
 	}
 
-	public function getStudent($id)
+	public function getFubalerID($id)
 	{	
-		$statement = $this->db->prepare($this->STUDENTEXIST);
+		$statement = $this->db->prepare($this->FUDBALER);
 		$statement->bindValue(1, $id, PDO::PARAM_INT);	
 		$statement->execute();
 		// $result = $statement->fetchAll();
@@ -28,16 +30,26 @@ class DAO {
 		}
 	}
 
-	public function updateStudent($id, $ime, $prezime, $indeks)
-	{
-		$statement = $this->db->prepare($this->UPDATESTUDENT);
-		$statement->bindValue(1, $id);
-		$statement->bindValue(2, $ime);
-		$statement->bindValue(3, $prezime);
-		$statement->bindValue(4, $indeks);
-		
+
+	public function getFudbaler($n)
+	{	
+		$statement = $this->db->prepare($this->GETFUDBALER);
+		$statement->bindValue(1, $n, PDO::PARAM_INT);	
 		$statement->execute();
+		$result = $statement->fetchAll();
+		return $result;
 	}
 
+	public function brojGolova($brgolova)
+	{
+		$statement = $this->db->prepare($this->AVERAGEGOALS);
+		$statement->bindValue(1, $brgolova);
+		if($statement->fetch()){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 }
 ?>
